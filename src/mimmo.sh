@@ -2,6 +2,7 @@
 
 case $1 in
 	help)
+<<<<<<< HEAD
 		echo "[compileAll] compile ALL source files"
     echo "[compile] compile a specific source file"
 		echo "[cleanup] delete binaries"
@@ -12,8 +13,6 @@ case $1 in
 		;;
 	cleanup)
 		echo "cleaning up."
-		make clean
-		;;
   compile)
     echo "[1] Oneway-UDP-IPv4"
     echo "[2] Oneway-UDP-IPv6"
@@ -27,5 +26,11 @@ case $1 in
     ;;
 	*)
 		echo "Use 'help' for details"
+=======
+		rm -R *.triglia *.out
+		;; 
+	*)
+		echo "Command not found."
+>>>>>>> a269b0b65740e17a861a6395b71bc832708116c0
 		;;
 esac
