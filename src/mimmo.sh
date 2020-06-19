@@ -13,6 +13,8 @@ case $1 in
 		;;
 	cleanup)
 		echo "cleaning up."
+    make clean
+    ;;
   compile)
     echo "[1] Oneway-UDP-IPv4"
     echo "[2] Oneway-UDP-IPv6"
