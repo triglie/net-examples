@@ -1,2 +1,3 @@
-# netlib
-A network dev-friendly library 
+# net-examples
+ 
+A collection of C-socket exercises. 
