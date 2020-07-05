@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
     }
     memset(&local_addr, 0, sizeof(local_addr));
     local_addr.sin6_family = AF_INET6;
+    local_addr.sin6_addr = in6addr_any;
     local_addr.sin6_port = htons(atoi(argv[1]));
 
     if(bind(sockfd, (struct sockaddr *) &local_addr, sizeof(local_addr)) < 0) {
