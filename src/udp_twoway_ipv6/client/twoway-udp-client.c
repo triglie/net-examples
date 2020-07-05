@@ -33,7 +33,7 @@ int main(int argc, char** args) {
         n = recvfrom(sockfd, recvline, 99, 0, (struct sockaddr *) &dest_addr, &len);
         recvline[n] = 0;
         inet_ntop(PF_INET6, (struct in6_addr*) &dest_addr.sin6_addr, ipv6, INET6_ADDRSTRLEN);
-        printf("[%s:%d => client] %s \n", ipv6, ntohs(dest_addr.sin6_port), recvline);
+        printf("[%s@%d => client] %s \n", ipv6, ntohs(dest_addr.sin6_port), recvline);
     }
 
 }
