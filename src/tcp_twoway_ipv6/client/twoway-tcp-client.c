@@ -6,6 +6,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <netdb.h>
 
 #define BUFFERSIZE  1024 
 #define NOFLAGS     0
@@ -27,7 +29,7 @@ int main (int argc, char * argv[])
         bytes_received; 
 
     char * server_ip, 
-         * server_port; 
+         * server_port;
 
     if (argc < 3) {
         printf("[usage] %s <remote ip> <remote port> \n", argv[0]);
@@ -38,7 +40,7 @@ int main (int argc, char * argv[])
         server_port = argv[2]; 
     }
 
-    sockfd = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+    sockfd = socket(AF_INET6, SOCK_STREAM, NOFLAGS);
 
     if (sockfd < 0) {
         perror("[error] "); 
@@ -50,7 +52,7 @@ int main (int argc, char * argv[])
     inet_pton(AF_INET6, server_ip, &(remote.sin6_addr));
     remote.sin6_port = htons(atoi(server_port));  
 
-    command_status = connect(sockfd, (struct sockaddr *) &remote, sizeof (remote)); 
+    command_status = connect(sockfd, (struct sockaddr *) &remote, sizeof(remote)); 
 
     if (command_status < 0) {
         perror("[error] "); 
@@ -74,7 +76,7 @@ int main (int argc, char * argv[])
         rcv_buffer[bytes_received] = '\0'; 
 
         /** retrieve server ipv6 */
-        inet_ntop(AF_INET6, &remote.sin6_addr, ipv6_remote, INET6_ADDRSTRLEN);
+        inet_ntop(AF_INET6, (struct in6_addr*) &remote.sin6_addr, ipv6_remote, INET6_ADDRSTRLEN);
 
         /** print to stdout */
         printf(
