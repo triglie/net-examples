@@ -29,9 +29,9 @@ int main(int argc, char** args) {
 
     while(fgets(sendline, 100, stdin) != NULL ) {
         sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *) &dest_addr, len);
-        n = recvfrom(sockfd, recvline, strlen(recvline) - 1, 0, (struct sockaddr *) &dest_addr, &len);
+        n = recvfrom(sockfd, recvline, 99, 0, (struct sockaddr *) &dest_addr, &len);
         recvline[n] = 0;
-        printf("From IP:%s, Port:%d, msg:%s \n", inet_ntoa(dest_addr.sin_addr), ntohs(dest_addr.sin_port), recvline);
+        printf("[%s:%d => client] %s \n", inet_ntoa(dest_addr.sin_addr), ntohs(dest_addr.sin_port), recvline);
     }
 
 }

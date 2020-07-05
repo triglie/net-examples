@@ -26,7 +26,10 @@ int main (int argc, char * argv[])
     int command_status; 
 
     /** remote struct len */
-    int remote_len;
+    socklen_t socklen = sizeof(struct sockaddr_in);
+
+    /** bytes read from remote */
+    int msg_length; 
 
     if (argc < 2) {
         printf("[usage] %s <listening port> \n", argv[0]); 
@@ -42,6 +45,7 @@ int main (int argc, char * argv[])
         exit(-1);
     }
 
+    memset((char *) &remote, 0, sizeof( remote ));
     memset((char *) &local, 0, sizeof( local ));
     local.sin_family = AF_INET; 
     local.sin_port = htons(atoi(listening_port));  
@@ -56,19 +60,20 @@ int main (int argc, char * argv[])
 
     while (TRUE) {
 
-        int msg_length = recvfrom(
+        /** clear the buffer */
+        memset(buffer, 0, sizeof(buffer)); 
+
+        msg_length = recvfrom(
             sockfd, 
             buffer, 
-            BUFFERSIZE - 1, 
+            BUFFERSIZE, 
             STD_CONFIG, 
             (struct sockaddr *) &remote, 
-            &remote_len
+            &socklen
         ); 
 
-        buffer[BUFFERSIZE - 1] = '\0'; 
-
         printf(
-            "[%s:%s => local:%s] %s", 
+            "[%s:%d => local:%s] %s \n", 
             inet_ntoa(remote.sin_addr), 
             ntohs(remote.sin_port), 
             listening_port, 
@@ -81,7 +86,7 @@ int main (int argc, char * argv[])
             msg_length, 
             STD_CONFIG, 
             (struct sockaddr *) &remote, 
-            remote_len
+            socklen
         ); 
     }
 }
