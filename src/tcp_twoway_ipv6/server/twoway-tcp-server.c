@@ -8,6 +8,8 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
+#define TRUE 1
+
 int main(int argc, char** argv) {
     char ipv6[INET6_ADDRSTRLEN];
     int sockfd, newsockfd, n;
@@ -37,22 +39,23 @@ int main(int argc, char** argv) {
 
     listen(sockfd, 5);
 
-    for(;;) {
+    while (TRUE) {
         len = sizeof(remote_addr);
         newsockfd = accept(sockfd, (struct sockaddr *) &remote_addr, &len);
-
+        
+        sprintf(mesg, "init"); 
         if(fork() == 0) {
             close(sockfd);
-            for(;;) {
+            while (strcmp(mesg, "quit") != 0) {
                 n = recv(newsockfd, mesg, 1023, 0);
                 if(n == 0) return 0;
                 mesg[n] = 0;
                 inet_ntop(PF_INET6, (struct in6_addr*) &remote_addr.sin6_addr, ipv6, INET6_ADDRSTRLEN);
-                printf("Pid=%d: received from %s@%d => %s", getpid(), ipv6, ntohs(remote_addr.sin6_port), mesg);
+                printf("Pid=%d: received from %s@%d => %s \n", getpid(), ipv6, ntohs(remote_addr.sin6_port), mesg);
                 send(newsockfd, mesg, n, 0);
             }
             return 0;      
         }
-        else close(newsockfd);
+        else close(newsockfd); 
     }
 }
