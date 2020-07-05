@@ -8,6 +8,8 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
+#define TRUE 1
+
 int main(int argc, char** argv) {
     int sockfd, newsockfd, n;
     struct sockaddr_in local_addr, remote_addr;
@@ -36,21 +38,24 @@ int main(int argc, char** argv) {
 
     listen(sockfd, 5);
 
-    for(;;) {
+    while (TRUE) {
         len = sizeof(remote_addr);
         newsockfd = accept(sockfd, (struct sockaddr *) &remote_addr, &len);
-
+        
+        sprintf(mesg, "init"); 
         if(fork() == 0) {
             close(sockfd);
-            for(;;) {
+            while (strcmp(mesg, "quit") != 0) {
                 n = recv(newsockfd, mesg, 1023, 0);
                 if(n == 0) return 0;
                 mesg[n] = 0;
-                printf("Pid=%d: received from %s@%d => %s", getpid(), inet_ntoa(remote_addr.sin_addr), ntohs(remote_addr.sin_port), mesg);
+                printf("Pid=%d: received from %s@%d => %s \n", getpid(), inet_ntoa(remote_addr.sin_addr), ntohs(remote_addr.sin_port), mesg);
                 send(newsockfd, mesg, n, 0);
             }
             return 0;      
         }
-        else close(newsockfd);
+        else close(newsockfd); 
     }
+
+    return 0; 
 }
