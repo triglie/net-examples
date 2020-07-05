@@ -1,4 +1,4 @@
-all: oneway-udp-ipv4 oneway-udp-ipv6
+all: oneway-udp-ipv4 oneway-udp-ipv6 twoway-udp-ipv6
 
 oneway-udp-ipv4:
 	gcc ./udp_oneway_ipv4/client/oneway-udp-client.c -o ./udp_oneway_ipv4/client/oneway-udp-client.triglia
