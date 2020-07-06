@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 
 #define HOSTFILE            "hosts"
 #define LISTENER_PORT       9898
@@ -48,6 +49,72 @@ class Message
             sender_port = htons(sender->sin_port), 
             this->message = message; 
         } 
+}; 
+
+class ListenerSocket 
+{
+    private: 
+        int file_descriptor; 
+        struct sockaddr_in listener; 
+        struct sockaddr_in sender; 
+
+        void _check_status (int status) {
+            if (status >= 0) return; 
+            perror("[error]");
+            exit(-1); 
+        }
+        
+        int _bind() {
+            bzero((char *) &(listener), sizeof(listener)); 
+            listener.sin_family = AF_INET; 
+            listener.sin_port = htons(LISTENER_PORT); 
+            return bind(
+                file_descriptor, 
+                (struct sockaddr *) &listener,
+                sizeof(listener)
+            ); 
+        }
+
+    public:
+
+        ListenerSocket () { 
+            this->_check_status(file_descriptor = socket(AF_INET, SOCK_DGRAM, ZERO_FLAGS)); 
+            this->_check_status(this->_bind()); 
+        }
+
+        Message* receive () {
+
+            int msg_length = 0; 
+            char message[MAX_MESSAGE_LENGTH]; 
+            socklen_t sender_length = sizeof(sender); 
+
+            msg_length = recvfrom(
+                file_descriptor, 
+                message, 
+                MAX_MESSAGE_LENGTH, 
+                ZERO_FLAGS, 
+                (struct sockaddr *) &sender, 
+                &sender_length
+            ); 
+
+            message[msg_length] = '\0'; 
+
+            return new Message(&sender, message); 
+        }
+
+        void sendAck(Message* msg) {
+            socklen_t socklen = sizeof(struct sockaddr_in); 
+
+            sendto(
+                file_descriptor, 
+                msg->message.c_str(),
+                sizeof( msg->message.c_str() ), 
+                ZERO_FLAGS, 
+                (struct sockaddr *) &(msg->sender), 
+                socklen
+            ); 
+        }
+
 }; 
 
 int main (int argc, char * argv[])
@@ -133,8 +200,66 @@ int main (int argc, char * argv[])
         if (dest->sendto) 
             std::cout << dest->ip << std::endl;
     
-    std::cout << "\n\n>> "; 
-    std::cin >> message; 
+    /*--------------------------------------------------------- /
+     * Apriamo una socket per l'invio dei messaggi ai destinatari 
+     *---------------------------------------------------------*/
+    
+    int sendersocket = socket(AF_INET, SOCK_DGRAM, ZERO_FLAGS); 
+    struct sockaddr_in destination_addr;
+
+    if (sendersocket < 0) {
+        perror("[error]"); 
+        exit(-1); 
+    }
+
+    // imposto il timeout a 2 secondi per l'ack del messaggio. 
+    struct timeval timeout={2,0}; 
+    setsockopt(
+        sendersocket,
+        SOL_SOCKET,
+        SO_RCVTIMEO,
+        (char*)&timeout,
+        sizeof(struct timeval)
+    );
+
+    bzero(&destination_addr, sizeof(struct sockaddr_in));
+    destination_addr.sin_family = AF_INET;
+    destination_addr.sin_port = htons(LISTENER_PORT);
+
+    while (true) {
+        char ack[MAX_MESSAGE_LENGTH];
+        socklen_t len = sizeof(struct sockaddr_in);
+        std::cout << ">> "; 
+        std::cin >> message; 
+
+        for (Destination * dest : hosts) {
+            if (dest->sendto) {
+                inet_pton(AF_INET, dest->ip.c_str(), &(destination_addr.sin_addr));
+
+                sendto(
+                    sendersocket, 
+                    message.c_str(), 
+                    strlen(message.c_str()), 
+                    ZERO_FLAGS, 
+                    (struct sockaddr *) &destination_addr, 
+                    sizeof(struct sockaddr_in)
+                );
+
+                int acklen = recvfrom(
+                    sendersocket, 
+                    ack, 
+                    MAX_MESSAGE_LENGTH - 1, 
+                    ZERO_FLAGS, 
+                    (struct sockaddr *) &destination_addr, 
+                    &len
+                );
+
+                if (acklen < 0) {
+                    printf("errore nell'inoltro a %s \n", dest->ip.c_str()); 
+                }
+            }            
+        }
+    }
     
     wait(NULL); 
     return 0; 
