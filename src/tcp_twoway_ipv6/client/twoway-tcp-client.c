@@ -75,13 +75,10 @@ int main (int argc, char * argv[])
         /** sanitize receiving buffer */
         rcv_buffer[bytes_received] = '\0'; 
 
-        /** retrieve server ipv6 */
-        inet_ntop(AF_INET6, (struct in6_addr*) &remote.sin6_addr, ipv6_remote, INET6_ADDRSTRLEN);
-
         /** print to stdout */
         printf(
             "[%s@%d => local] %s \n",
-            ipv6_remote, 
+            server_ip, 
             ntohs(remote.sin6_port), 
             rcv_buffer 
         ); 
