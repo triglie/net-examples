@@ -64,12 +64,14 @@ int main(int argc, char** argv) {
             clock_gettime(CLOCK_REALTIME, &T2);
             sec = T2.tv_sec - T1.tv_sec; 
             nsec = T2.tv_nsec - T1.tv_nsec; 
+        
+            int ms = sec > 0 ? sec * 1000 : nsec / 1000000; 
+
             printf(
-                "Ping from:%s Port:%d Time: sec=%ld nsec=%ld \n", 
+                "Ping from:%s Port:%d Time: ms=%ld \n", 
                 inet_ntoa(dest_addr.sin_addr),  
                 ntohs(dest_addr.sin_port),
-                sec, 
-                nsec
+                ms
             );
             close(sockfd);
             return 0;
