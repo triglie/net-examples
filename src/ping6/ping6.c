@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     int packets = 10;
 
     if(argc < 3) {
-        printf("[error] usage: %s <ip> <port> [#packets]", argv[0]);
+        printf("[error] usage: %s <ip> <port> [#packets]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -25,7 +25,8 @@ int main(int argc, char** argv) {
         if(fork() == 0) {
 
             int       sockfd;
-            long      sec, nsec, ms;
+            long      sec, nsec;
+            int       ms; 
             struct    timespec T1, T2;
             struct    sockaddr_in6 dest_addr;
             char      time[1024];
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
                 strlen("ACK"), 
                 NO_FLAGS, 
                 (struct sockaddr*) &dest_addr, 
-                sizeof(struct sockaddr_in)
+                sizeof(struct sockaddr_in6)
             );
 
             recvfrom(
@@ -68,7 +69,11 @@ int main(int argc, char** argv) {
             nsec = T2.tv_nsec - T1.tv_nsec; 
             ms = sec > 0 ? sec * 1000 : nsec / 1000000; 
 
-            printf("Ping from:%s Port:%d Time: ms=%ld \n", argv[1], argv[2], ms);
+            
+            if (ms > 1) 
+                printf("Ping from:%s Port:%s Time: ms=%ld \n", argv[1], argv[2], ms);
+            else 
+                printf("Ping from:%s Port:%s Time: <1ms \n", argv[1], argv[2], ms);
 
             close(sockfd);
             return 0;
