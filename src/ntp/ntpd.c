@@ -41,7 +41,8 @@ int main (int argc, char * argv[]) {
                 0,
                 (struct sockaddr*) &remote_addr,
                 &len
-            );
+        );
+
         if(fork() == 0) {
             time_t T;
             for(int i=0; i<7; i++) {
@@ -50,7 +51,7 @@ int main (int argc, char * argv[]) {
                 sendto(
                     sockfd,
                     res,
-                    sizeof(res) - 1,
+                    strlen(res) - 1,
                     0,
                     (struct sockaddr*) &remote_addr,
                     len

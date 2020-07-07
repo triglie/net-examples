@@ -27,7 +27,7 @@ int main (int argc, char * argv[])
     }
     else {
         server_ip   = argv[1]; 
-        server_port = argv[0]; 
+        server_port = argv[2]; 
     }
 
     socket_fd = socket(AF_INET, SOCK_DGRAM, ZERO_FLAGS); 
@@ -61,7 +61,9 @@ int main (int argc, char * argv[])
         sizeof(struct timeval)
     );
 
-    printf("[ntp] waiting for ntp server response. \n"); 
+    printf("[ntp] waiting for ntp server response. \n\n"); 
+    printf("[ntp response] Day Mon Num hh:mm:ss year\n"); 
+    printf("----------------------------------------\n"); 
 
     for (int i = 0; i < TOTAL_PACKETS; ++i) {
 
