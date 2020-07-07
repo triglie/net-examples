@@ -14,7 +14,7 @@ int main (int argc, char * argv[])
 {
     int     socket_fd;
     struct  timeval timeout = {7,0}; 
-    struct  sockaddr_in destination; 
+    struct  sockaddr_in destination, remote; 
     char    *server_ip, 
             *server_port; 
     char    buffer[BUFFER_SIZE]; 
@@ -65,20 +65,23 @@ int main (int argc, char * argv[])
 
     for (int i = 0; i < TOTAL_PACKETS; ++i) {
 
+        bzero(buffer, BUFFER_SIZE); 
+
         bytes_receiver = recvfrom(
             socket_fd, 
             buffer, 
             BUFFER_SIZE, 
             ZERO_FLAGS, 
-            (struct sockaddr *) &destination, 
+            (struct sockaddr *) &remote, 
             &socklen
         ); 
 
         if (bytes_receiver < 0) 
             printf("[ntp response] packet timeout. \n"); 
-
-        buffer[bytes_receiver] = '\0'; 
-        printf("[ntp response] %s \n", buffer); 
+        else {
+            buffer[bytes_receiver] = '\0'; 
+            printf("[ntp response] %s \n", buffer); 
+        }
     }
 
     return EXIT_SUCCESS; 
