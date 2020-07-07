@@ -1,4 +1,4 @@
-all: oneway-udp-ipv4 oneway-udp-ipv6 twoway-udp-ipv4 twoway-udp-ipv6 twoway-tcp-ipv4 twoway-tcp-ipv6 
+all: oneway-udp-ipv4 oneway-udp-ipv6 twoway-udp-ipv4 twoway-udp-ipv6 twoway-tcp-ipv4 twoway-tcp-ipv6 myping
 
 oneway-udp-ipv4:
 	gcc ./udp_oneway_ipv4/client/oneway-udp-client.c -o ./udp_oneway_ipv4/client/oneway-udp-client.triglia
@@ -23,6 +23,10 @@ twoway-udp-ipv4:
 twoway-udp-ipv6:
 	gcc ./udp_twoway_ipv6/client/twoway-udp-client.c -o ./udp_twoway_ipv6/client/twoway-udp-client.triglia
 	gcc ./udp_twoway_ipv6/server/twoway-udp-server.c -o ./udp_twoway_ipv6/server/twoway-udp-server.triglia
+
+myping: 
+	gcc ./ping/ping.c -o ping.triglia
+	gcc ./ping/pingd.c -o pingd.triglia
 
 clean:
 	find . -name *.triglia -delete
