@@ -11,10 +11,25 @@
 
 int main(int argc, char** argv) {
 
+<<<<<<< HEAD
     for(int i = 0; i < 10; i++) {
         if(fork() == 0) {
             int sockfd;
             float sec, nsec;
+=======
+    if(argc < 3) {
+        printf("Usage: %s IP_dest PORT_dest number_of_packet", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int n = 10;
+    if(argc == 4) n= atoi(argv[3]);
+
+    for(int i = 0; i < n; i++) {
+        if(fork() == 0) {
+            int sockfd;
+            long sec, nsec;
+>>>>>>> 06176b8be6de5d646fb2a2b1f1f529591d103069
             struct timespec T1, T2;
             struct sockaddr_in dest_addr;
             char time[1024];
@@ -32,12 +47,20 @@ int main(int argc, char** argv) {
             dest_addr.sin_port = htons(atoi(argv[2]));
 
             clock_gettime(CLOCK_REALTIME, &T1);
+<<<<<<< HEAD
             memcpy(time, &T1, sizeof(T1));
 
             sendto(
                 sockfd, 
                 time, 
                 1023, 
+=======
+
+            sendto(
+                sockfd, 
+                "ACK", 
+                strlen("ACK"), 
+>>>>>>> 06176b8be6de5d646fb2a2b1f1f529591d103069
                 NO_FLAGS, 
                 (struct sockaddr*) &dest_addr, 
                 sizeof(struct sockaddr_in)
@@ -53,10 +76,17 @@ int main(int argc, char** argv) {
             );
             
             clock_gettime(CLOCK_REALTIME, &T2);
+<<<<<<< HEAD
             sec = (float)(T2.tv_sec - T1.tv_sec); 
             nsec = (float)(T2.tv_nsec - T1.tv_nsec); 
             printf(
                 "Ping from:%s Port:%d Time: sec=%lf nsec=%lf \n", 
+=======
+            sec = T2.tv_sec - T1.tv_sec; 
+            nsec = T2.tv_nsec - T1.tv_nsec; 
+            printf(
+                "Ping from:%s Port:%d Time: sec=%ld nsec=%ld \n", 
+>>>>>>> 06176b8be6de5d646fb2a2b1f1f529591d103069
                 inet_ntoa(dest_addr.sin_addr),  
                 ntohs(dest_addr.sin_port),
                 sec, 
