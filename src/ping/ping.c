@@ -1,1 +1,71 @@
-int main() {}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <errno.h>
+
+#define NO_FLAGS 0
+
+int main(int argc, char** argv) {
+
+    for(int i = 0; i < 10; i++) {
+        if(fork() == 0) {
+            int sockfd;
+            float sec, nsec;
+            struct timespec T1, T2;
+            struct sockaddr_in dest_addr;
+            char time[1024];
+            socklen_t len = sizeof(struct sockaddr_in);
+
+            sockfd = socket(AF_INET, SOCK_DGRAM, NO_FLAGS);
+            if(sockfd < 0) {
+                perror("Error: ");
+                exit(EXIT_FAILURE);
+            }
+
+            bzero(&dest_addr, sizeof(dest_addr));
+            dest_addr.sin_family = PF_INET;
+            inet_pton(AF_INET, argv[1], &(dest_addr.sin_addr));
+            dest_addr.sin_port = htons(atoi(argv[2]));
+
+            clock_gettime(CLOCK_REALTIME, &T1);
+            memcpy(time, &T1, sizeof(T1));
+
+            sendto(
+                sockfd, 
+                time, 
+                1023, 
+                NO_FLAGS, 
+                (struct sockaddr*) &dest_addr, 
+                sizeof(struct sockaddr_in)
+            );
+
+            recvfrom(
+                sockfd,
+                time,
+                strlen(time),
+                NO_FLAGS,
+                (struct sockaddr*) &dest_addr,
+                &len
+            );
+            
+            clock_gettime(CLOCK_REALTIME, &T2);
+            sec = (float)(T2.tv_sec - T1.tv_sec); 
+            nsec = (float)(T2.tv_nsec - T1.tv_nsec); 
+            printf(
+                "Ping from:%s Port:%d Time: sec=%lf nsec=%lf \n", 
+                inet_ntoa(dest_addr.sin_addr),  
+                ntohs(dest_addr.sin_port),
+                sec, 
+                nsec
+            );
+            close(sockfd);
+            return 0;
+        }
+        sleep(1);
+    }
+
+}
