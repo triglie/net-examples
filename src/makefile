@@ -32,6 +32,9 @@ myping6:
 	gcc ./ping6/ping6.c -o ./ping6/ping6.triglia
 	gcc ./ping6/ping6d.c -o ./ping6/ping6d.triglia
 
+ntp: 
+	gcc ./ntp/ntp.c -o ./ntp/ntp.triglia
+	gcc ./ntp/ntpd.c -o ./ntp/ntpd.triglia
 
 clean:
 	find . -name *.triglia -delete
