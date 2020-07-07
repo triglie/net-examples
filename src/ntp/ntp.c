@@ -74,6 +74,9 @@ int main (int argc, char * argv[])
             &socklen
         ); 
 
+        if (bytes_receiver < 0) 
+            printf("[ntp response] packet timeout. \n"); 
+
         buffer[bytes_receiver] = '\0'; 
         printf("[ntp response] %s \n", buffer); 
     }
