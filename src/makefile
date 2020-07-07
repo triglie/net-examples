@@ -25,8 +25,8 @@ twoway-udp-ipv6:
 	gcc ./udp_twoway_ipv6/server/twoway-udp-server.c -o ./udp_twoway_ipv6/server/twoway-udp-server.triglia
 
 myping: 
-	gcc ./ping/ping.c -o ping.triglia
-	gcc ./ping/pingd.c -o pingd.triglia
+	gcc ./ping/ping.c -o ./ping/ping.triglia
+	gcc ./ping/pingd.c -o ./ping/pingd.triglia
 
 clean:
 	find . -name *.triglia -delete
